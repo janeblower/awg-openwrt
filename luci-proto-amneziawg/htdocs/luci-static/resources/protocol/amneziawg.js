@@ -43,6 +43,23 @@ function validateBase64(section_id, value) {
 	return true;
 }
 
+function rangeValidator(max) {
+	return function(section_id, value) {
+		if (value.length == 0)
+			return true;
+
+		var m = value.match(/^(\d+)(?:-(\d+))?$/);
+
+		if (!m || +m[1] > max || (m[2] != null && (+m[2] > max || +m[2] < +m[1])))
+			return _('Expecting a value or a range (e.g. 10-20) between 0 and %d').format(max);
+
+		return true;
+	};
+}
+
+var validateU16Range = rangeValidator(65535);
+var validateU32Range = rangeValidator(4294967295);
+
 var stubValidator = {
 	factory: validation,
 	apply: function(type, value, args) {
@@ -251,23 +268,23 @@ return network.registerProtocol('amneziawg', {
         o.placeholder = '0';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_h1', _('H1'), _('Handshake initiation packet type header.'));
-        o.datatype = 'string';
+        o = s.taboption('amneziawg', form.Value, 'awg_h1', _('H1'), _('Handshake initiation packet type header. A range such as <code>10-20</code> is also accepted.'));
+        o.validate = validateU32Range;
         o.placeholder = '1';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_h2', _('H2'), _('Handshake response packet type header.'));
-        o.datatype = 'string';
+        o = s.taboption('amneziawg', form.Value, 'awg_h2', _('H2'), _('Handshake response packet type header. A range such as <code>10-20</code> is also accepted.'));
+        o.validate = validateU32Range;
         o.placeholder = '2';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_h3', _('H3'), _('Handshake cookie packet type header.'));
-        o.datatype = 'string';
+        o = s.taboption('amneziawg', form.Value, 'awg_h3', _('H3'), _('Handshake cookie packet type header. A range such as <code>10-20</code> is also accepted.'));
+        o.validate = validateU32Range;
         o.placeholder = '3';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_h4', _('H4'), _('Transport packet type header.'));
-        o.datatype = 'string';
+        o = s.taboption('amneziawg', form.Value, 'awg_h4', _('H4'), _('Transport packet type header. A range such as <code>10-20</code> is also accepted.'));
+        o.validate = validateU32Range;
         o.placeholder = '4';
         o.optional = true;
 		
@@ -289,6 +306,41 @@ return network.registerProtocol('amneziawg', {
 		
 		o = s.taboption('amneziawg', form.Value, 'awg_i5', _('I5'), _('Fifth special junk packet signature.'));
         o.datatype = 'string';
+        o.optional = true;
+
+        o = s.taboption('amneziawg', form.Value, 'awg_header_protection_key', _('Header Protection Key'), _('Optional. Base64-encoded key used to obfuscate packet headers. Must match on both sides.'));
+        o.validate = validateBase64;
+        o.password = true;
+        o.optional = true;
+
+        o = s.taboption('amneziawg', form.Value, 'awg_content_padding_addition', _('Content Padding Addition'), _('Extra bytes appended to transport packets. A range such as <code>10-20</code> is also accepted.'));
+        o.validate = validateU16Range;
+        o.placeholder = '0';
+        o.optional = true;
+
+        o = s.taboption('amneziawg', form.Value, 'awg_rekey_after_time', _('Rekey After Time'), _('Seconds before a session is renegotiated. A range such as <code>110-130</code> is also accepted.'));
+        o.validate = validateU16Range;
+        o.placeholder = '120';
+        o.optional = true;
+
+        o = s.taboption('amneziawg', form.Value, 'awg_rekey_timeout', _('Rekey Timeout'), _('Seconds between handshake retries. A range such as <code>5-7</code> is also accepted.'));
+        o.validate = validateU16Range;
+        o.placeholder = '5';
+        o.optional = true;
+
+        o = s.taboption('amneziawg', form.Value, 'awg_reject_after_time', _('Reject After Time'), _('Seconds before a session is discarded. A range such as <code>170-190</code> is also accepted.'));
+        o.validate = validateU16Range;
+        o.placeholder = '180';
+        o.optional = true;
+
+        o = s.taboption('amneziawg', form.Value, 'awg_keepalive_timeout', _('Keepalive Timeout'), _('Seconds of inactivity before a keepalive is sent. A range such as <code>8-12</code> is also accepted.'));
+        o.validate = validateU16Range;
+        o.placeholder = '10';
+        o.optional = true;
+
+        o = s.taboption('amneziawg', form.Value, 'awg_max_handshake_attempts', _('Max Handshake Attempts'), _('Handshake retries before giving up. A range such as <code>15-20</code> is also accepted.'));
+        o.validate = validateU16Range;
+        o.placeholder = '18';
         o.optional = true;
 
 		// -- peers -----------------------------------------------------------------------
@@ -382,6 +434,9 @@ return network.registerProtocol('amneziawg', {
 			if (!stubValidator.apply('port', config.interface_listenport || '0'))
 				return _('ListenPort setting is invalid');
 
+			if (config.interface_headerprotectionkey && validateBase64(null, config.interface_headerprotectionkey) !== true)
+				return _('HeaderProtectionKey setting is invalid');
+
 			for (var i = 0; i < config.peers.length; i++) {
 				var pconf = config.peers[i];
 
@@ -414,7 +469,7 @@ return network.registerProtocol('amneziawg', {
 				if (pconf.peer_persistentkeepalive == 'off' || pconf.peer_persistentkeepalive == '0')
 					delete pconf.peer_persistentkeepalive;
 
-				if (!stubValidator.apply('port', pconf.peer_persistentkeepalive || '0'))
+				if (validateU16Range(null, pconf.peer_persistentkeepalive || '0') !== true)
 					return _('PersistentKeepAlive setting is invalid');
 			}
 
@@ -460,6 +515,13 @@ return network.registerProtocol('amneziawg', {
 					s.getOption('awg_i3').getUIElement(s.section).setValue(config.interface_i3 || '');
 					s.getOption('awg_i4').getUIElement(s.section).setValue(config.interface_i4 || '');
 					s.getOption('awg_i5').getUIElement(s.section).setValue(config.interface_i5 || '');
+					s.getOption('awg_header_protection_key').getUIElement(s.section).setValue(config.interface_headerprotectionkey || '');
+					s.getOption('awg_content_padding_addition').getUIElement(s.section).setValue(config.interface_contentpaddingaddition || '');
+					s.getOption('awg_rekey_after_time').getUIElement(s.section).setValue(config.interface_rekeyaftertime || '');
+					s.getOption('awg_rekey_timeout').getUIElement(s.section).setValue(config.interface_rekeytimeout || '');
+					s.getOption('awg_reject_after_time').getUIElement(s.section).setValue(config.interface_rejectaftertime || '');
+					s.getOption('awg_keepalive_timeout').getUIElement(s.section).setValue(config.interface_keepalivetimeout || '');
+					s.getOption('awg_max_handshake_attempts').getUIElement(s.section).setValue(config.interface_maxhandshakeattempts || '');
 
 					if (config.interface_dns)
 						s.getOption('dns').getUIElement(s.section).setValue(config.interface_dns);
@@ -778,9 +840,9 @@ return network.registerProtocol('amneziawg', {
 		o.placeholder = '51820';
 		o.datatype = 'port';
 
-		o = ss.option(form.Value, 'persistent_keepalive', _('Persistent Keep Alive'), _('Optional. Seconds between keep alive messages. Default is 0 (disabled). Recommended value if this device is behind a NAT is 25.'));
+		o = ss.option(form.Value, 'persistent_keepalive', _('Persistent Keep Alive'), _('Optional. Seconds between keep alive messages. Default is 0 (disabled). Recommended value if this device is behind a NAT is 25. A range such as <code>20-30</code> is also accepted.'));
 		o.modalonly = true;
-		o.datatype = 'range(0,65535)';
+		o.validate = validateU16Range;
 		o.placeholder = '0';
 
 
@@ -809,6 +871,13 @@ return network.registerProtocol('amneziawg', {
 				i3 = s.formvalue(s.section, 'awg_i3'),
 				i4 = s.formvalue(s.section, 'awg_i4'),
 				i5 = s.formvalue(s.section, 'awg_i5'),
+				hpk = s.formvalue(s.section, 'awg_header_protection_key'),
+				cpa = s.formvalue(s.section, 'awg_content_padding_addition'),
+				rat = s.formvalue(s.section, 'awg_rekey_after_time'),
+				rt = s.formvalue(s.section, 'awg_rekey_timeout'),
+				rjat = s.formvalue(s.section, 'awg_reject_after_time'),
+				kt = s.formvalue(s.section, 'awg_keepalive_timeout'),
+				mha = s.formvalue(s.section, 'awg_max_handshake_attempts'),
 			    prv = this.section.formvalue(section_id, 'private_key'),
 			    psk = this.section.formvalue(section_id, 'preshared_key'),
 			    eport = this.section.formvalue(section_id, 'endpoint_port'),
@@ -841,6 +910,13 @@ return network.registerProtocol('amneziawg', {
 				i3 ? 'I3 = ' + i3 : '# I3 not defined',
 				i4 ? 'I4 = ' + i4 : '# I4 not defined',
 				i5 ? 'I5 = ' + i5 : '# I5 not defined',
+				hpk ? 'HeaderProtectionKey = ' + hpk : '# HeaderProtectionKey not defined',
+				cpa ? 'ContentPaddingAddition = ' + cpa : '# ContentPaddingAddition not defined',
+				rat ? 'RekeyAfterTime = ' + rat : '# RekeyAfterTime not defined',
+				rt ? 'RekeyTimeout = ' + rt : '# RekeyTimeout not defined',
+				rjat ? 'RejectAfterTime = ' + rjat : '# RejectAfterTime not defined',
+				kt ? 'KeepaliveTimeout = ' + kt : '# KeepaliveTimeout not defined',
+				mha ? 'MaxHandshakeAttempts = ' + mha : '# MaxHandshakeAttempts not defined',
 				'',
 				'[Peer]',
 				'PublicKey = ' + pub,
