@@ -2,6 +2,26 @@
 
 # Пакеты amneziawg для роутеров с прошивкой OpenWRT
 
+## AWG 3.0
+
+Пакеты собираются из AmneziaWG 3.0: модуль ядра `v3.0.20260731-04`, утилиты `v3.0.20260730`.
+
+В дополнение к параметрам 2.0 доступны:
+
+| Параметр                    | Опция UCI                         | Описание                                     |
+| --------------------------- | --------------------------------- | -------------------------------------------- |
+| `HeaderProtectionKey`       | `awg_header_protection_key`       | Base64-ключ для обфускации заголовков пакетов |
+| `ContentPaddingAddition`    | `awg_content_padding_addition`    | Дополнительное дополнение транспортных пакетов |
+| `RekeyAfterTime`            | `awg_rekey_after_time`            | Время до пересогласования сессии, сек        |
+| `RekeyTimeout`              | `awg_rekey_timeout`               | Пауза между попытками рукопожатия, сек       |
+| `RejectAfterTime`           | `awg_reject_after_time`           | Время жизни сессии, сек                      |
+| `KeepaliveTimeout`          | `awg_keepalive_timeout`           | Простой до отправки keepalive, сек           |
+| `MaxHandshakeAttempts`      | `awg_max_handshake_attempts`      | Количество попыток рукопожатия               |
+
+Параметры `H1`—`H4`, `PersistentKeepalive` и все перечисленные выше принимают
+как одно значение, так и диапазон вида `10-20` — конкретное значение выбирается
+случайно в заданных пределах.
+
 ## Custom package feed (GitHub Pages)
 
 Репозиторий также публикует полноценный [OpenWRT package feed](https://slava-shchipunov.github.io/awg-openwrt/)
@@ -96,6 +116,26 @@ AWG 2.0 можно собрать под определённую платфор
 - [@Kot-nikot](https://github.com/Kot-nikot) и [@Onotot](https://github.com/Onotot) — за полезные материалы и подсказки🤝
 - [@ygurov](https://github.com/ygurov) - за [имплементацию](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module/pull/88) awg 2.0 для модуля ядра 💪
 - А также всем, кто приносил полезные примеры в личку и в [ишью](https://github.com/Slava-Shchipunov/awg-openwrt/issues/39), отписывались в комменты к PR с имплементацией о возникших багах и проблемах ❤️
+
+## AWG 3.0
+
+Packages are built from AmneziaWG 3.0: kernel module `v3.0.20260731-04`, tools `v3.0.20260730`.
+
+In addition to the 2.0 parameters the following are available:
+
+| Parameter                   | UCI option                        | Description                              |
+| --------------------------- | --------------------------------- | ---------------------------------------- |
+| `HeaderProtectionKey`       | `awg_header_protection_key`       | Base64 key used to obfuscate packet headers |
+| `ContentPaddingAddition`    | `awg_content_padding_addition`    | Extra padding for transport packets      |
+| `RekeyAfterTime`            | `awg_rekey_after_time`            | Seconds before a session is renegotiated |
+| `RekeyTimeout`              | `awg_rekey_timeout`               | Seconds between handshake retries        |
+| `RejectAfterTime`           | `awg_reject_after_time`           | Session lifetime in seconds              |
+| `KeepaliveTimeout`          | `awg_keepalive_timeout`           | Idle seconds before a keepalive is sent  |
+| `MaxHandshakeAttempts`      | `awg_max_handshake_attempts`      | Handshake attempts before giving up      |
+
+`H1`—`H4`, `PersistentKeepalive` and all of the above accept either a single
+value or a range such as `10-20`, in which case the effective value is picked
+randomly within those bounds.
 
 ## Automatic configuration of AmneziaWG for OpenWRT version 23.05.0 and newer
 
