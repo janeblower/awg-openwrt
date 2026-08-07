@@ -60,6 +60,24 @@ function rangeValidator(max) {
 var validateU16Range = rangeValidator(65535);
 var validateU32Range = rangeValidator(4294967295);
 
+var cipherNames = [ 'chacha20-poly1305', 'aes-gcm-128', 'aes-gcm-256' ];
+
+function validateCipherList(section_id, value) {
+	if (value.length == 0)
+		return true;
+
+	var names = value.split(/\s*,\s*/);
+
+	if (names.length > cipherNames.length)
+		return _('Expecting at most %d ciphers').format(cipherNames.length);
+
+	for (var i = 0; i < names.length; i++)
+		if (cipherNames.indexOf(names[i]) < 0 || names.indexOf(names[i]) != i)
+			return _('Expecting a comma-separated list of distinct ciphers: %s').format(cipherNames.join(', '));
+
+	return true;
+}
+
 var stubValidator = {
 	factory: validation,
 	apply: function(type, value, args) {
@@ -343,6 +361,11 @@ return network.registerProtocol('amneziawg', {
         o.placeholder = '18';
         o.optional = true;
 
+        o = s.taboption('amneziawg', form.Value, 'awg_ciphers', _('Ciphers'), _('Transport ciphers offered by this interface, in order of preference: <code>chacha20-poly1305</code>, <code>aes-gcm-128</code>, <code>aes-gcm-256</code>.'));
+        o.validate = validateCipherList;
+        o.placeholder = 'chacha20-poly1305,aes-gcm-256';
+        o.optional = true;
+
 		// -- peers -----------------------------------------------------------------------
 
 		try {
@@ -522,6 +545,7 @@ return network.registerProtocol('amneziawg', {
 					s.getOption('awg_reject_after_time').getUIElement(s.section).setValue(config.interface_rejectaftertime || '');
 					s.getOption('awg_keepalive_timeout').getUIElement(s.section).setValue(config.interface_keepalivetimeout || '');
 					s.getOption('awg_max_handshake_attempts').getUIElement(s.section).setValue(config.interface_maxhandshakeattempts || '');
+					s.getOption('awg_ciphers').getUIElement(s.section).setValue(config.interface_ciphers || '');
 
 					if (config.interface_dns)
 						s.getOption('dns').getUIElement(s.section).setValue(config.interface_dns);
@@ -878,6 +902,7 @@ return network.registerProtocol('amneziawg', {
 				rjat = s.formvalue(s.section, 'awg_reject_after_time'),
 				kt = s.formvalue(s.section, 'awg_keepalive_timeout'),
 				mha = s.formvalue(s.section, 'awg_max_handshake_attempts'),
+				ciphers = s.formvalue(s.section, 'awg_ciphers'),
 			    prv = this.section.formvalue(section_id, 'private_key'),
 			    psk = this.section.formvalue(section_id, 'preshared_key'),
 			    eport = this.section.formvalue(section_id, 'endpoint_port'),
@@ -917,6 +942,7 @@ return network.registerProtocol('amneziawg', {
 				rjat ? 'RejectAfterTime = ' + rjat : '# RejectAfterTime not defined',
 				kt ? 'KeepaliveTimeout = ' + kt : '# KeepaliveTimeout not defined',
 				mha ? 'MaxHandshakeAttempts = ' + mha : '# MaxHandshakeAttempts not defined',
+				ciphers ? 'Ciphers = ' + ciphers : '# Ciphers not defined',
 				'',
 				'[Peer]',
 				'PublicKey = ' + pub,

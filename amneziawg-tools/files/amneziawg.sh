@@ -44,6 +44,7 @@ proto_amneziawg_init_config() {
 	proto_config_add_string "awg_reject_after_time"
 	proto_config_add_string "awg_keepalive_timeout"
 	proto_config_add_string "awg_max_handshake_attempts"
+	proto_config_add_string "awg_ciphers"
 # shellcheck disable=SC2034
 	available=1
 # shellcheck disable=SC2034
@@ -204,6 +205,7 @@ proto_amneziawg_setup() {
 	local awg_reject_after_time
 	local awg_keepalive_timeout
 	local awg_max_handshake_attempts
+	local awg_ciphers
 
 	ensure_key_is_generated "${config}"
 
@@ -240,6 +242,7 @@ proto_amneziawg_setup() {
 	config_get awg_reject_after_time "${config}" "awg_reject_after_time"
 	config_get awg_keepalive_timeout "${config}" "awg_keepalive_timeout"
 	config_get awg_max_handshake_attempts "${config}" "awg_max_handshake_attempts"
+	config_get awg_ciphers "${config}" "awg_ciphers"
 
 	if proto_amneziawg_is_kernel_mode; then
 		logger -t "amneziawg" "info: using kernel-space kmod-amneziawg for ${AWG}"
@@ -336,6 +339,9 @@ proto_amneziawg_setup() {
 	fi
 	if [ "${awg_max_handshake_attempts}" ]; then
 		echo "MaxHandshakeAttempts=${awg_max_handshake_attempts}" >> "${awg_cfg}"
+	fi
+	if [ "${awg_ciphers}" ]; then
+		echo "Ciphers=${awg_ciphers}" >> "${awg_cfg}"
 	fi
 	config_foreach proto_amneziawg_setup_peer "amneziawg_${config}"
 
