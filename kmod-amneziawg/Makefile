@@ -2,13 +2,13 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=kmod-amneziawg
-PKG_VERSION:=3.0.20260731
+PKG_VERSION:=3.0.20260805
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/amnezia-vpn/amneziawg-linux-kernel-module.git
-# Version: latest stable release tag
-PKG_SOURCE_VERSION:=v$(PKG_VERSION)-04
+PKG_SOURCE_URL:=https://github.com/janeblower/amneziawg-linux-kernel-module.git
+# Version: head of the feat/aes-gcm branch
+PKG_SOURCE_VERSION:=484a9ae194cdde4552361cdb7aea3de5c6ff4289
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 MAKE_PATH:=src
 
@@ -24,7 +24,8 @@ define KernelPackage/amneziawg
 		+kmod-udptunnel4 \
 		+kmod-udptunnel6 \
 		+kmod-crypto-lib-chacha20poly1305 \
-		+kmod-crypto-lib-curve25519
+		+kmod-crypto-lib-curve25519 \
+		+kmod-crypto-gcm
 endef
 
 define Build/Prepare

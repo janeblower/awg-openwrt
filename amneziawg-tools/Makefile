@@ -5,9 +5,9 @@ PKG_VERSION:=3.0.20260730
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/amnezia-vpn/amneziawg-tools.git
-# Version: latest stable release tag
-PKG_SOURCE_VERSION:=v$(PKG_VERSION)
+PKG_SOURCE_URL:=https://github.com/janeblower/amneziawg-tools.git
+# Version: head of the feat/aes-gcm branch
+PKG_SOURCE_VERSION:=93e8b620d1372cf9d44d3694fd0092df69494cbb
 
 PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=COPYING
