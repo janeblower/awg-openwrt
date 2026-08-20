@@ -60,6 +60,10 @@ function rangeValidator(max) {
 var validateU16Range = rangeValidator(65535);
 var validateU32Range = rangeValidator(4294967295);
 
+function parseFlag(value) {
+	return /^(1|on|true|enabled)$/i.test(value || '') ? '1' : '0';
+}
+
 var stubValidator = {
 	factory: validation,
 	apply: function(type, value, args) {
@@ -343,6 +347,12 @@ return network.registerProtocol('amneziawg', {
         o.placeholder = '18';
         o.optional = true;
 
+        o = s.taboption('amneziawg', form.Flag, 'awg_random_trailers', _('Random Trailers'), _('Append a random number of bytes to every packet. Must be enabled on both sides.'));
+        o.optional = true;
+
+        o = s.taboption('amneziawg', form.Flag, 'awg_disable_cookies', _('Disable Cookies'), _('Do not answer handshakes with cookie messages when the interface is under load.'));
+        o.optional = true;
+
 		// -- peers -----------------------------------------------------------------------
 
 		try {
@@ -522,6 +532,8 @@ return network.registerProtocol('amneziawg', {
 					s.getOption('awg_reject_after_time').getUIElement(s.section).setValue(config.interface_rejectaftertime || '');
 					s.getOption('awg_keepalive_timeout').getUIElement(s.section).setValue(config.interface_keepalivetimeout || '');
 					s.getOption('awg_max_handshake_attempts').getUIElement(s.section).setValue(config.interface_maxhandshakeattempts || '');
+					s.getOption('awg_random_trailers').getUIElement(s.section).setValue(parseFlag(config.interface_randomtrailers));
+					s.getOption('awg_disable_cookies').getUIElement(s.section).setValue(parseFlag(config.interface_disablecookies));
 
 					if (config.interface_dns)
 						s.getOption('dns').getUIElement(s.section).setValue(config.interface_dns);
@@ -878,6 +890,8 @@ return network.registerProtocol('amneziawg', {
 				rjat = s.formvalue(s.section, 'awg_reject_after_time'),
 				kt = s.formvalue(s.section, 'awg_keepalive_timeout'),
 				mha = s.formvalue(s.section, 'awg_max_handshake_attempts'),
+				rtr = s.formvalue(s.section, 'awg_random_trailers'),
+				dc = s.formvalue(s.section, 'awg_disable_cookies'),
 			    prv = this.section.formvalue(section_id, 'private_key'),
 			    psk = this.section.formvalue(section_id, 'preshared_key'),
 			    eport = this.section.formvalue(section_id, 'endpoint_port'),
@@ -917,6 +931,8 @@ return network.registerProtocol('amneziawg', {
 				rjat ? 'RejectAfterTime = ' + rjat : '# RejectAfterTime not defined',
 				kt ? 'KeepaliveTimeout = ' + kt : '# KeepaliveTimeout not defined',
 				mha ? 'MaxHandshakeAttempts = ' + mha : '# MaxHandshakeAttempts not defined',
+				rtr == '1' ? 'RandomTrailers = on' : '# RandomTrailers not defined',
+				dc == '1' ? 'DisableCookies = on' : '# DisableCookies not defined',
 				'',
 				'[Peer]',
 				'PublicKey = ' + pub,
