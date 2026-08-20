@@ -14,7 +14,7 @@ Feed публикуется workflow `.github/workflows/build-feed.yml` в ве�
 
 Корневой сайт feed:
 
-`https://slava-shchipunov.github.io/awg-openwrt/`
+`https://janeblower.github.io/awg-openwrt/`
 
 Навигация на сайте построена по уровням:
 
@@ -37,13 +37,13 @@ Feed публикуется workflow `.github/workflows/build-feed.yml` в ве�
 
 ```sh
 mkdir -p /etc/apk/keys
-wget -O /etc/apk/keys/awg-openwrt-feed.pem https://slava-shchipunov.github.io/awg-openwrt/keys/awg-openwrt-feed.pem
+wget -O /etc/apk/keys/awg-openwrt-feed.pem https://janeblower.github.io/awg-openwrt/keys/awg-openwrt-feed.pem
 ```
 
 Затем добавьте feed (замените `VERSION`, `TARGET`, `SUBTARGET`):
 
 ```sh
-echo "https://slava-shchipunov.github.io/awg-openwrt/VERSION/TARGET/SUBTARGET/packages.adb" >> /etc/apk/repositories.d/customfeeds.list
+echo "https://janeblower.github.io/awg-openwrt/VERSION/TARGET/SUBTARGET/packages.adb" >> /etc/apk/repositories.d/customfeeds.list
 apk update
 apk add amneziawg-tools kmod-amneziawg luci-proto-amneziawg
 ```
@@ -59,13 +59,13 @@ apk add amneziawg-tools
 
 Ключи публикуются в стабильном пути:
 
-`https://slava-shchipunov.github.io/awg-openwrt/keys/awg-openwrt-feed.pem`
+`https://janeblower.github.io/awg-openwrt/keys/awg-openwrt-feed.pem`
 
 Для доверенной установки добавьте public key в `/etc/apk/keys/`:
 
 ```sh
 mkdir -p /etc/apk/keys
-wget -O /etc/apk/keys/awg-openwrt-feed.pem https://slava-shchipunov.github.io/awg-openwrt/keys/awg-openwrt-feed.pem
+wget -O /etc/apk/keys/awg-openwrt-feed.pem https://janeblower.github.io/awg-openwrt/keys/awg-openwrt-feed.pem
 apk update
 ```
 
