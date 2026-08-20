@@ -344,9 +344,13 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Pages hostnames are lowercase, repository owners are not.
+          OWNER=$(printf '%s' "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO="${{ github.repository }}"
+
           bash .github/scripts/generate-feed-pages.sh \
             "$GITHUB_WORKSPACE/gh-pages-content" \
-            "https://slava-shchipunov.github.io/awg-openwrt"
+            "https://${OWNER}.github.io/${REPO#*/}"
 
       - name: Publish to GitHub Pages branch
         # Existing gh-pages content is restored above, then republished as one complete tree.
