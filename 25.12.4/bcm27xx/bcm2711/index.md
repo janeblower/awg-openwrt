@@ -1,0 +1,44 @@
+---
+layout: default
+title: "OpenWrt 25.12.4 bcm27xx/bcm2711"
+---
+
+# AmneziaWG feed
+
+Index of [(root)](https://janeblower.github.io/awg-openwrt/) / [25.12.4](https://janeblower.github.io/awg-openwrt/25.12.4/) / [bcm27xx](https://janeblower.github.io/awg-openwrt/25.12.4/bcm27xx/)
+
+- OpenWrt version: `25.12.4`
+- Target: `bcm27xx`
+- Subtarget: `bcm2711`
+- Package architecture: `aarch64_cortex-a72`
+
+## Upstream OpenWrt target
+
+[https://downloads.openwrt.org/releases/25.12.4/targets/bcm27xx/bcm2711/](https://downloads.openwrt.org/releases/25.12.4/targets/bcm27xx/bcm2711/)
+
+## Configure Feed
+
+```sh
+mkdir -p /etc/apk/keys
+wget -O /etc/apk/keys/awg-openwrt-feed.pem "https://janeblower.github.io/awg-openwrt/keys/awg-openwrt-feed.pem"
+echo "https://janeblower.github.io/awg-openwrt/25.12.4/bcm27xx/bcm2711/packages.adb" >> /etc/apk/repositories.d/customfeeds.list
+```
+
+## Install Packages
+
+```sh
+apk update
+apk add amneziawg-tools kmod-amneziawg luci-proto-amneziawg
+```
+
+<script src="https://janeblower.github.io/awg-openwrt/assets/copy-code.js?v=2"></script>
+
+## Feed files
+
+- [amneziawg-tools-3.1.20260812-r1.apk](https://janeblower.github.io/awg-openwrt/25.12.4/bcm27xx/bcm2711/amneziawg-tools-3.1.20260812-r1.apk)
+- [feed.json](https://janeblower.github.io/awg-openwrt/25.12.4/bcm27xx/bcm2711/feed.json)
+- [index.json](https://janeblower.github.io/awg-openwrt/25.12.4/bcm27xx/bcm2711/index.json)
+- [kmod-amneziawg-6.12.87.3.1.20260812-r1.apk](https://janeblower.github.io/awg-openwrt/25.12.4/bcm27xx/bcm2711/kmod-amneziawg-6.12.87.3.1.20260812-r1.apk)
+- [luci-i18n-amneziawg-ru-0.260820.52859.apk](https://janeblower.github.io/awg-openwrt/25.12.4/bcm27xx/bcm2711/luci-i18n-amneziawg-ru-0.260820.52859.apk)
+- [luci-proto-amneziawg-3.1.0-r1.apk](https://janeblower.github.io/awg-openwrt/25.12.4/bcm27xx/bcm2711/luci-proto-amneziawg-3.1.0-r1.apk)
+- [packages.adb](https://janeblower.github.io/awg-openwrt/25.12.4/bcm27xx/bcm2711/packages.adb)
