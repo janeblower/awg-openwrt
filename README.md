@@ -2,9 +2,9 @@
 
 # Пакеты amneziawg для роутеров с прошивкой OpenWRT
 
-## AWG 3.0
+## AWG 3.1
 
-Пакеты собираются из AmneziaWG 3.0: модуль ядра `v3.0.20260731-04`, утилиты `v3.0.20260730`.
+Пакеты собираются из AmneziaWG 3.1: модуль ядра `v3.1.20260812`, утилиты `v3.1.20260812`.
 
 В дополнение к параметрам 2.0 доступны:
 
@@ -21,6 +21,19 @@
 Параметры `H1`—`H4`, `PersistentKeepalive` и все перечисленные выше принимают
 как одно значение, так и диапазон вида `10-20` — конкретное значение выбирается
 случайно в заданных пределах.
+
+В 3.1 добавлены два переключателя:
+
+| Параметр         | Опция UCI             | Описание                                                       |
+| ---------------- | --------------------- | -------------------------------------------------------------- |
+| `RandomTrailers` | `awg_random_trailers` | Дописывает в конец каждого пакета случайное число байт          |
+| `DisableCookies` | `awg_disable_cookies` | Не отвечать cookie-сообщениями на рукопожатия под нагрузкой      |
+
+`RandomTrailers` меняет размеры пакетов, поэтому должен быть включён на обеих
+сторонах туннеля: сторона с выключенным параметром отбросит рукопожатие с
+«лишними» байтами. Для транспортных пакетов он действует, только если не задан
+`ContentPaddingAddition`. `DisableCookies` влияет лишь на исходящие ответы и
+заодно отключает встроенную защиту от флуда рукопожатиями.
 
 ## Custom package feed (GitHub Pages)
 
@@ -117,9 +130,9 @@ AWG 2.0 можно собрать под определённую платфор
 - [@ygurov](https://github.com/ygurov) - за [имплементацию](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module/pull/88) awg 2.0 для модуля ядра 💪
 - А также всем, кто приносил полезные примеры в личку и в [ишью](https://github.com/Slava-Shchipunov/awg-openwrt/issues/39), отписывались в комменты к PR с имплементацией о возникших багах и проблемах ❤️
 
-## AWG 3.0
+## AWG 3.1
 
-Packages are built from AmneziaWG 3.0: kernel module `v3.0.20260731-04`, tools `v3.0.20260730`.
+Packages are built from AmneziaWG 3.1: kernel module `v3.1.20260812`, tools `v3.1.20260812`.
 
 In addition to the 2.0 parameters the following are available:
 
@@ -136,6 +149,19 @@ In addition to the 2.0 parameters the following are available:
 `H1`—`H4`, `PersistentKeepalive` and all of the above accept either a single
 value or a range such as `10-20`, in which case the effective value is picked
 randomly within those bounds.
+
+Two switches were added in 3.1:
+
+| Parameter        | UCI option            | Description                                             |
+| ---------------- | --------------------- | ------------------------------------------------------- |
+| `RandomTrailers` | `awg_random_trailers` | Appends a random number of bytes to every packet        |
+| `DisableCookies` | `awg_disable_cookies` | Do not answer handshakes with cookie messages under load |
+
+`RandomTrailers` changes packet sizes, so it has to be enabled on both ends of
+the tunnel: a peer with the option off drops handshakes carrying the extra
+bytes. For transport packets it only applies when `ContentPaddingAddition` is
+not set. `DisableCookies` affects outgoing replies only and also turns off the
+built-in handshake flood protection.
 
 ## Automatic configuration of AmneziaWG for OpenWRT version 23.05.0 and newer
 
