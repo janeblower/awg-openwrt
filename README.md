@@ -46,7 +46,7 @@
 
 1. Если ваш роутер обладает достаточным объмом доступной ROM, рекомендую воспользоваться скриптом, описанным ниже, только для установки нужных пакетов, а для точечной маршрутизации траффика в туннель использовать podkop от пользователя [@itdoginfo](https://github.com/itdoginfo) - тут в [документации](https://podkop.net/docs/tunnels/awg_settings/) описан процесс настройки
 
-2. Если вам нужно только установить пакеты, я добавил скрипт amneziawg-install - он автоматически скачает пакеты из этого репозитория под ваше устройство (только для стабильной версии OpenWRT), а также предложит сразу настроить интерфейс с протоколом AmneziaWG. Если пользователь согласится, нужно будет ввести параметры конфига, которые запросит скрипт. При этом скрипт создаст интерфейс, настроит для него правила фаерволла, а также **включит перенаправление всего траффика через тунель AmneziaWG** (установит в настройках Peer галочку Route Allowed IPs).
+2. Если вам нужно только установить пакеты, я добавил скрипт amneziawg-install - он подключит apk-feed этого репозитория под ваше устройство, установит пакеты, а также предложит сразу настроить интерфейс с протоколом AmneziaWG. Если пользователь согласится, нужно будет ввести параметры конфига, которые запросит скрипт. При этом скрипт создаст интерфейс, настроит для него правила фаерволла, а также **включит перенаправление всего траффика через тунель AmneziaWG** (установит в настройках Peer галочку Route Allowed IPs).
    Для запуска скрипта подключитесь к роутеру по SSH, введите команду и следуйте инструкциям на экране:
 
 ```
@@ -64,21 +64,27 @@ sh <(wget -O - https://raw.githubusercontent.com/janeblower/awg-openwrt/refs/hea
 ## Сборка пакетов для всех устройств, поддерживающих OpenWRT
 
 В репозиторий добавлен скрипт, который парсит данные о поддерживаемых платформах со страницы OpenWRT и автоматически запускает сборку пакетов AmneziaWG для всех устройств.
-На данный момент собраны пакеты AWG 3.1 для всех устройств для версий OpenWRT:
+Пакеты AWG 3.1 собраны для всех устройств и опубликованы в apk-feed для версий OpenWRT:
 
-1. [25.12.0](https://github.com/janeblower/awg-openwrt/releases/tag/v25.12.0)
-2. [25.12.1](https://github.com/janeblower/awg-openwrt/releases/tag/v25.12.1)
-3. [25.12.2](https://github.com/janeblower/awg-openwrt/releases/tag/v25.12.2)
-4. [25.12.3](https://github.com/janeblower/awg-openwrt/releases/tag/v25.12.3)
-5. [25.12.4](https://github.com/janeblower/awg-openwrt/releases/tag/v25.12.4)
-6. [25.12.5](https://github.com/janeblower/awg-openwrt/releases/tag/v25.12.5)
+1. [25.12.0](https://janeblower.github.io/awg-openwrt/25.12.0/)
+2. [25.12.1](https://janeblower.github.io/awg-openwrt/25.12.1/)
+3. [25.12.2](https://janeblower.github.io/awg-openwrt/25.12.2/)
+4. [25.12.3](https://janeblower.github.io/awg-openwrt/25.12.3/)
+5. [25.12.4](https://janeblower.github.io/awg-openwrt/25.12.4/)
+6. [25.12.5](https://janeblower.github.io/awg-openwrt/25.12.5/)
 
 ## Выбор пакетов для своего устройства
 
 В соответствии с пунктом [Указываем переменные для сборки](https://github.com/itdoginfo/domain-routing-openwrt/wiki/Amnezia-WG-Build#%D1%83%D0%BA%D0%B0%D0%B7%D1%8B%D0%B2%D0%B0%D0%B5%D0%BC-%D0%BF%D0%B5%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%BA%D0%B8)
-определить `target` и `subtarget` вашего устройства. Далее перейти на страницу релиза, соответствующего вашей версии OpenWRT, затем поиском по странице (Ctrl+F) найти пакеты, название которых оканчивается на `target_subtarget.apk`: `kmod-amneziawg`, `amneziawg-tools`, `luci-proto-amneziawg` и русификацию `luci-i18n-amneziawg-ru`
+определить `target` и `subtarget` вашего устройства, затем открыть в feed путь `/<версия>/<target>/<subtarget>/` — там лежат `kmod-amneziawg`, `amneziawg-tools`, `luci-proto-amneziawg` и русификация `luci-i18n-amneziawg-ru`. Подключить этот путь как apk-репозиторий проще, чем скачивать пакеты руками — см. [документацию по feed](docs/custom-feed.md)
 
 ## Как запустить сборку для всех поддерживаемых устройств
+
+Этот репозиторий публикует пакеты через apk-feed: для этого в форке достаточно включить Actions,
+добавить секреты подписи и запустить экшен Build OpenWrt Feed, указав версию OpenWRT — он соберёт
+все target/subtarget и выложит их в ветку `gh-pages`.
+
+Если нужны `.apk` файлами в Releases, сборку запускает тег:
 
 1. Создать форк этого репозитория
 2. Переключиться на вкладку Actions и включить Github actions (по умолчанию для форков они выключены)
@@ -142,7 +148,7 @@ built-in handshake flood protection.
 
 1. If your router has enough available ROM, I recommend using the script described below only to install the necessary packages, and use podkop from user [@itdoginfo](https://github.com/itdoginfo) for selective traffic routing into the tunnel - the setup process is described in the [documentation](https://podkop.net/docs/tunnels/awg_settings/)
 
-2. If you only need to install packages, I added the amneziawg-install script - it will automatically download packages from this repository for your device (only for the stable version of OpenWRT), and also offer to immediately configure the interface with the AmneziaWG protocol. If the user agrees, you will need to enter the config parameters that the script will request. The script will create an interface, configure firewall rules for it, and also **enable redirection of all traffic through the AmneziaWG tunnel** (check the Route Allowed IPs box in the Peer settings).
+2. If you only need to install packages, I added the amneziawg-install script - it adds the apk feed of this repository for your device, installs the packages, and also offers to immediately configure the interface with the AmneziaWG protocol. If the user agrees, you will need to enter the config parameters that the script will request. The script will create an interface, configure firewall rules for it, and also **enable redirection of all traffic through the AmneziaWG tunnel** (check the Route Allowed IPs box in the Peer settings).
    To run the script, connect to the router via SSH, enter the command and follow the instructions on the screen:
 
 ```
@@ -160,20 +166,26 @@ sh <(wget -O - https://raw.githubusercontent.com/janeblower/awg-openwrt/refs/hea
 # Building packages for all devices that support OpenWRT
 
 A script has been added to the repository that parses data on supported platforms from the OpenWRT page and automatically starts building AmneziaWG packages for all devices.
-AWG 3.1 packages are currently built for all devices for these OpenWRT versions:
+AWG 3.1 packages are built for all devices and published in the apk feed for these OpenWRT versions:
 
-1. [25.12.0](https://github.com/janeblower/awg-openwrt/releases/tag/v25.12.0)
-2. [25.12.1](https://github.com/janeblower/awg-openwrt/releases/tag/v25.12.1)
-3. [25.12.2](https://github.com/janeblower/awg-openwrt/releases/tag/v25.12.2)
-4. [25.12.3](https://github.com/janeblower/awg-openwrt/releases/tag/v25.12.3)
-5. [25.12.4](https://github.com/janeblower/awg-openwrt/releases/tag/v25.12.4)
-6. [25.12.5](https://github.com/janeblower/awg-openwrt/releases/tag/v25.12.5)
+1. [25.12.0](https://janeblower.github.io/awg-openwrt/25.12.0/)
+2. [25.12.1](https://janeblower.github.io/awg-openwrt/25.12.1/)
+3. [25.12.2](https://janeblower.github.io/awg-openwrt/25.12.2/)
+4. [25.12.3](https://janeblower.github.io/awg-openwrt/25.12.3/)
+5. [25.12.4](https://janeblower.github.io/awg-openwrt/25.12.4/)
+6. [25.12.5](https://janeblower.github.io/awg-openwrt/25.12.5/)
 
 ## Selecting packages for your device
 
-In accordance with the paragraph [Specify variables for builds](https://github.com/itdoginfo/domain-routing-openwrt/wiki/Amnezia-WG-Build#%D1%83%D0%BA%D0%B0%D0%B7%D1%8B%D0%B2%D0%B0%D0%B5%D0%BC-%D0%BF%D0%B5%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%BA%D0%B8) (instructions in Russian) determine `target` and `subtarget` of your device. Then go to the release page corresponding to your OpenWRT version, then search the page (Ctrl+F) for the packages whose names end in `target_subtarget.apk`: `kmod-amneziawg`, `amneziawg-tools`, `luci-proto-amneziawg` and the `luci-i18n-amneziawg-ru` translation
+In accordance with the paragraph [Specify variables for builds](https://github.com/itdoginfo/domain-routing-openwrt/wiki/Amnezia-WG-Build#%D1%83%D0%BA%D0%B0%D0%B7%D1%8B%D0%B2%D0%B0%D0%B5%D0%BC-%D0%BF%D0%B5%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%BA%D0%B8) (instructions in Russian) determine `target` and `subtarget` of your device, then open the `/<version>/<target>/<subtarget>/` path in the feed — it holds `kmod-amneziawg`, `amneziawg-tools`, `luci-proto-amneziawg` and the `luci-i18n-amneziawg-ru` translation. Wiring that path up as an apk repository is easier than downloading the packages by hand, see the [feed documentation](docs/custom-feed.md)
 
 ## How to run a build for all supported devices
+
+This repository publishes packages through the apk feed: in a fork it is enough to enable Actions,
+add the signing secrets and run the Build OpenWrt Feed action with an OpenWRT version — it builds
+every target/subtarget and publishes them to the `gh-pages` branch.
+
+If you want `.apk` files in Releases instead, a tag starts that build:
 
 1. Create a fork of this repository
 2. Switch to the Actions tab and enable Github actions (they are disabled for forks by default)
