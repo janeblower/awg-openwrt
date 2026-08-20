@@ -10,5 +10,6 @@ OpenWrt 24.10.x and older are not supported by this feed. Use GitHub Releases ar
 
 ## Available OpenWrt versions
 
+- [25.12.3](https://janeblower.github.io/awg-openwrt/25.12.3/)
 - [25.12.4](https://janeblower.github.io/awg-openwrt/25.12.4/)
 - [25.12.5](https://janeblower.github.io/awg-openwrt/25.12.5/)
